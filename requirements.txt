@@ -1,0 +1,17 @@
+# backend
+virtualenv .
+source bin/activate
+pip install django djangorestframework
+pip install django-cors-headers
+django-admin startproject backend
+cd backend
+python manage.py startapp main
+python manage.py migrate
+pip install django-unixtimestampfield
+python manage.py createsuperuser
+# (gp / geonpyung93)
+python manage.py makemigrations --empty main
+
+# frontend
+yarn global add create-react-app
+create-react-app frontend
