@@ -24,7 +24,8 @@ class ChartDataProvider extends Component {
         end_time: moment(),
         // moment()
         window_time: 60,
-        num_windows: 10,        
+        num_windows: 10,
+        isRequired: ''        
     }    
     
     // this.setState({
@@ -69,23 +70,53 @@ class ChartDataProvider extends Component {
         const data = new FormData(event.target);
         const [device_uuid, end_time, window_time, num_windows] = [data.get('device_uuid'), data.get('end_time'), data.get('window_time'), data.get('num_windows')]
         
+        // console.log(end_time , )
+        // TODO: end time
+        console.log(window_time == undefined);
         console.log(device_uuid, end_time, window_time, num_windows);
         
         // data.set('device_uuid', device_uuid);
 
-        axios.get('http://127.0.0.1:8000/api/bandwidth')
-        .then(response => {
-            // response.map(datum )
-            const newElement = new Array(response.data.filter(datum => {
-                return (datum.device_id === device_uuid)
-            }))
-            // console.log(newElement);
+        axios.get('http://127.0.0.1:8000/api/bandwidth', {'timeout': 1000 * window_time})
 
-            // console.log(filteredData);
+
+        // axios.get('http://127.0.0.1:8000/api/bandwidth', {'timeout': 10000})
+        // axios({
+        //     timeout: 1000 * 1,
+        //     url: 'http://127.0.0.1:8000/api/bandwidth'
+        // })
+        .then(response => {
+            
+            const newElement = new Array(response.data.filter(datum => {
+                return (datum.device_id === device_uuid && Math.floor(new Date(datum.timestamp).getTime()/1000) < moment(end_time).format('X'))
+            }))
+            
+            // console.log(newElement);
+            
+            // 2018-04-27T13:33:03Z
+            // console.log('end_time',end_time)
+            // console.log('time comparison', '2018-04-27T13:33:03Z').valueOf, new Date(moment(end_time).format('X')).valueOf, new Date('2018-04-27T13:33:03Z').valueOf < moment(end_time).format('X'))
+
+            
+
+            // const xx = new Date('2018-04-27T13:33:03Z')
+            // console.log('formtted1', Math.floor(xx.getTime()/1000))
+            // console.log('comparing', Math.floor(xx.getTime()/1000) < moment(end_time).format('X'))
+            // console.log('formatted', moment(end_time).format('x'))
+            
+
+
+            const truncElement = new Array(newElement[0].slice(0, num_windows))
+
+            console.log('truncElement', truncElement)
             this.setState({
-                filteredData : newElement
-                // filteredData : newElement
-                // filteredData: newElement
+                filteredData : truncElement,
+                end_time : end_time,
+                window_time : window_time,
+                num_windows : num_windows,
+
+
+                // num_windows : num_windows
             })
         })
 
@@ -134,6 +165,27 @@ class ChartDataProvider extends Component {
         const options = distict_data.map(datum => {
             return {'label': datum, 'value': datum}
         })
+
+        const {isValid} = this.props;
+
+        const customStyles = {
+            control: (base, state) => ({
+              ...base,
+              // state.isFocused can display different borderColor if you need it
+              borderColor: state.isFocused ?
+                '#ddd' : isValid ?
+                '#ddd' : 'red',
+              // overwrittes hover style
+              '&:hover': {
+                borderColor: state.isFocused ?
+                  '#ddd' : isValid ?
+                  '#ddd' : 'red'
+              }
+            })
+          }
+        //   Required(){
+
+        //   }
         
         return(
             <Aux>
@@ -141,7 +193,8 @@ class ChartDataProvider extends Component {
             <form onSubmit={this.handleSubmit}>
                 <div className="form-group row mt-3">
                     <label className="col-2 col-form-label">device_uuid</label>
-                    <div className="col-10">
+                    <div className="col-10 ">
+                    {/* required */}
                     <Select
                         options = {options}
                         name="device_uuid"
