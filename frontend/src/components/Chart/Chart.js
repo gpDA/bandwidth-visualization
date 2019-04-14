@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
-import { Line } from 'react-chartjs-2'
+import { Line } from 'react-chartjs-2';
 
 // class Chart extends Component{
 //     state = {
@@ -48,16 +48,10 @@ const Chart = ({data}) => {
     const num_data = [...Array(data.length).keys()]
 
 
-    console.log(num_data);
+    // console.log(num_data);
 
     const chart_data = {
         labels: num_data,
-        // scales: {
-        //     yAxes: [{
-        //         padding: 100,
-        //         labelOffset: 20,
-        //     }]
-        // },
         datasets: [{
             label: "bytes_ts",
             lineTension: 0.1,
