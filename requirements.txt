@@ -18,8 +18,9 @@ create-react-app frontend
 yarn add react-router-dom
 yarn add react-chartjs-2 chart.js
 yarn add react-select
-yarn add rc-time-picker
+yarn add react-datepicker
 yarn add moment react-moment
+yarn add axios
 
 
 `yarn start` at frontend page
