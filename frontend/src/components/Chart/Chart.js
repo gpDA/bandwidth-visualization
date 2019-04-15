@@ -4,8 +4,9 @@ import { Line } from 'react-chartjs-2';
 
 const Chart = ({data}) => {
 
+
     // PRINT
-    // console.log('chart.js',data)
+    // console.log('chart.js ?',data)
     
     const bytes_ts  = Array.from(data.map(datum => datum.map(ele => {return ele.bytes_ts})))
 

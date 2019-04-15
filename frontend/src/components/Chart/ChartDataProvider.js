@@ -70,9 +70,7 @@ class ChartDataProvider extends Component {
                 window_time: window_time
             })
         } 
-
         if(num_windows !== ''){
-            
             this.setState({
                 num_windows: num_windows
             })
@@ -94,13 +92,15 @@ class ChartDataProvider extends Component {
         filteredData : truncElement,
     })        
     
-    // console.log('filteredData', truncElement, this.state.filteredData)
+    console.log('filteredData', truncElement, this.state.filteredData)
 
 
     }
 
 
     render(){
+        console.log('filteredData *', this.state.filteredData)
+
         const { data, loaded, filteredData, device_uuid} = this.state;
 
         const errors = validate(device_uuid);
