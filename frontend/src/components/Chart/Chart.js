@@ -3,7 +3,9 @@ import { Line } from 'react-chartjs-2';
 
 
 const Chart = ({data}) => {
-    console.log('chart.js',data)
+
+    // PRINT
+    // console.log('chart.js',data)
     
     const bytes_ts  = Array.from(data.map(datum => datum.map(ele => {return ele.bytes_ts})))
 
@@ -11,8 +13,10 @@ const Chart = ({data}) => {
     
     const bytes_fs  = (data.map(datum => datum.map(ele => {return ele.bytes_fs})))    
 
-    console.log('bytes_ts',bytes_fs)
+    // PRINT
+    // console.log('bytes_ts',bytes_fs)
 
+    // to populate x axes
     const num_data = [...Array(len_data[0]).keys()]
 
 

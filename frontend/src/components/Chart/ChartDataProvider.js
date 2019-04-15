@@ -2,190 +2,124 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import Spinner from '../Spinner/Spinner';
 import Chart from './Chart';
+import './Chart.css';
 import Select from 'react-select';
-// import TimePicker from 'rc-time-picker';
-// import 'rc-time-picker/assets/index.css';
 import DatePicker from "react-datepicker";
+import "./Chart.css";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 import axios from 'axios';
-// import styles from './Chart.css';
 
-// import {Container, Row, Col} from 'react-bootstrap';
-
+function validate(device_uuid){
+    return{
+        device_uuid: device_uuid.length === 0
+    };
+}
 class ChartDataProvider extends Component {
     state = {
         data: [],
         filteredData: [],
         loaded: false,
         selectedOption: null,
-        // default value
-        device_uuid: 'cf4844bc-a107-4e0a-84e1-fa04d76d388c',
-        end_time: moment(),
-        // moment()
+        device_uuid: '',
+        end_time: moment().format('LLL'),
         window_time: 60,
-        num_windows: 10,
-        isRequired: ''        
+        num_windows: 10,   
     }    
     
-    // this.setState({
-    //     end_time: moment(date).format('DD-MM-YYYY'); 
-    // })
-
-    // this.setState({
-    //     endtime: todayDate
-    // })
-
-    // componentDidMount() {
-    //     try {
-    //       const res = await ("http://127.0.0.1:8000/api/bandwidth");
-    //       const data = await res.json();
-
-        
-    //       this.setState({
-    //         data : data,
-    //         filteredData: data.filter(datum => {
-    //             return datum.device_id == 'cf4844bc-a107-4e0a-84e1-fa04d76d388c'
-    //         }),
-    //         loaded: true
-    //       });
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    //   }
     componentDidMount(){
         axios.get('http://127.0.0.1:8000/api/bandwidth')
         .then(response => {
-            // console.log(response.data);
             this.setState({
                 data: response.data,
                 loaded: true
-
             })
         })
     }
 
-      handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.target);
-        const [device_uuid, end_time, window_time, num_windows] = [data.get('device_uuid'), data.get('end_time'), data.get('window_time'), data.get('num_windows')]
-        
-        // console.log(end_time , )
-        // TODO: end time
-        console.log(window_time == undefined);
-        console.log(device_uuid, end_time, window_time, num_windows);
-        
-        // data.set('device_uuid', device_uuid);
-
-        axios.get('http://127.0.0.1:8000/api/bandwidth', {'timeout': 1000 * window_time})
-
-
-        // axios.get('http://127.0.0.1:8000/api/bandwidth', {'timeout': 10000})
-        // axios({
-        //     timeout: 1000 * 1,
-        //     url: 'http://127.0.0.1:8000/api/bandwidth'
-        // })
-        .then(response => {
-            
-            const newElement = new Array(response.data.filter(datum => {
-                return (datum.device_id === device_uuid && Math.floor(new Date(datum.timestamp).getTime()/1000) < moment(end_time).format('X'))
-            }))
-            
-            // console.log(newElement);
-            
-            // 2018-04-27T13:33:03Z
-            // console.log('end_time',end_time)
-            // console.log('time comparison', '2018-04-27T13:33:03Z').valueOf, new Date(moment(end_time).format('X')).valueOf, new Date('2018-04-27T13:33:03Z').valueOf < moment(end_time).format('X'))
-
-            
-
-            // const xx = new Date('2018-04-27T13:33:03Z')
-            // console.log('formtted1', Math.floor(xx.getTime()/1000))
-            // console.log('comparing', Math.floor(xx.getTime()/1000) < moment(end_time).format('X'))
-            // console.log('formatted', moment(end_time).format('x'))
-            
-
-
-            const truncElement = new Array(newElement[0].slice(0, num_windows))
-
-            console.log('truncElement', truncElement)
-            this.setState({
-                filteredData : truncElement,
-                end_time : end_time,
-                window_time : window_time,
-                num_windows : num_windows,
-
-
-                // num_windows : num_windows
-            })
-        })
-
-        // try{
-        //     const res = fetch("http://127.0.0.1:8000/api/bandwidth", {
-        //         // body: data,
-        //     });
-        //     const data_fetch = res.json();
-            
-            // console.log(data_fetch)
-            
-            // console.log(typeof(device_uuid))
-            // data_fetch.map(datum => {
-            //     console.log(datum.device_id === device_uuid )
-            // })
-            // [...this.state.arrayvar, newelement]
-
-
-        //     const newElement = new Array(data_fetch.filter(datum => {
-        //         return (datum.device_id === device_uuid)}))
-            
-        //     console.log(newElement);
-        //     this.setState({
-        //         filteredData : [... this.state.filteredData, newElement]
-        // })
-
-        // }catch(e){
-        //     console.log(e);
-        // }
-
+    handleDevice_uuidChange = device_uuid => {
+        this.setState({device_uuid})
     }
-    // console.log(this.state.filteredData)
-    handleChange(date){
+    // check if length of debvice_uuid input is not 0
+    canBeSubmitted(){
+        const errors = validate(this.state.device_uuid);
+        const isDisabled = Object.keys(errors).some(x => errors[x])
+        return !isDisabled;
+    }
+    
+    handleDateChange = (date) => {
         this.setState({
             endDate: date
         })
+    }    
+
+
+    // form submit event
+    handleSubmit = (event) => {
+        
+        // device_uuid is required; otherwise cannot submit
+        if(!this.canBeSubmitted()){
+            event.preventDefault();
+            return;
+        }
+
+        const data = new FormData(event.target);
+        // get the value of inputs
+        const [device_uuid, end_time, window_time, num_windows] = [data.get('device_uuid'), data.get('end_time'), data.get('window_time'), data.get('num_windows')]
+        
+        // PRINT
+        // console.log(device_uuid, end_time, window_time, num_windows);
+
+        // update end_time with input if end_time is given
+        if(end_time !== ''){
+            this.setState({
+                end_time: end_time
+            })
+        }
+        // update window_time with input if window_time is given
+        if(window_time !== ''){
+            this.setState({
+                window_time: window_time
+            })
+        } 
+        // update num_windows with input if num_windows is given
+        if(num_windows !== ''){
+            this.setState({
+                num_windows: num_windows
+            })
+        }                
+
+        // TODO: timeout??
+        // axios.get('http://127.0.0.1:8000/api/bandwidth', {'timeout': 1000 * window_time})
+
+        // axios.get('http://127.0.0.1:8000/api/bandwidth')
+
+
+        // return the filtered array
+        const newElement = new Array(this.state.data.filter(datum => {
+            return (datum.device_id === device_uuid && Math.floor(new Date(datum.timestamp).getTime()/1000) < moment(this.state.end_time).format('X'))
+        }))
+            const truncElement = new Array(newElement[0].slice(0, this.state.num_windows))
+            
+            // set updated array as filteredData (it will be used in chart.js)
+            this.setState({
+                filteredData : truncElement,
+            })
     }
 
     render(){
-        const { data, loaded, filteredData} = this.state;
+        const { data, loaded, filteredData, device_uuid} = this.state;
 
-        // console.log('filteredData',filteredData);
+        // error validation for required device_uuid field
+        const errors = validate(device_uuid);
+        const isDisabled = Object.keys(errors).some(x => errors[x]);
 
+        // populate device_uuid otions
         const distict_data = Array.from(new Set(data.map(datum => datum.device_id)))
-
         const options = distict_data.map(datum => {
             return {'label': datum, 'value': datum}
         })
-
-        const {isValid} = this.props;
-
-        const customStyles = {
-            control: (base, state) => ({
-              ...base,
-              // state.isFocused can display different borderColor if you need it
-              borderColor: state.isFocused ?
-                '#ddd' : isValid ?
-                '#ddd' : 'red',
-              // overwrittes hover style
-              '&:hover': {
-                borderColor: state.isFocused ?
-                  '#ddd' : isValid ?
-                  '#ddd' : 'red'
-              }
-            })
-          }
-        //   Required(){
-
-        //   }
+        
         
         return(
             <Aux>
@@ -196,8 +130,11 @@ class ChartDataProvider extends Component {
                     <div className="col-10 ">
                     {/* required */}
                     <Select
+                        className = {errors.device_uuid ? "error" : ""}
                         options = {options}
                         name="device_uuid"
+                        value = {device_uuid}
+                        onChange = {this.handleDevice_uuidChange}
                     />
                     </div>
                 </div> 
@@ -206,17 +143,13 @@ class ChartDataProvider extends Component {
                     <div class="col-10">
                     <DatePicker
                         className="form-control"
-                        // selected={moment(new Date()).format('LLLL')}
-                        // value={moment(new Date()).format('LLLL')}
                         selected={this.state.endDate}
                         timeFormat="HH:mm"
                         showTimeSelect
                         timeIntervals={15}
                         dateFormat="MMMM d, yyyy h:mm aa"
                         timeCaption="time"
-                        onChange={this.handleChange.bind(this)}
-                        // onChange={this.handleChange.bind(this)}
-                        // value={this.state.end_time}
+                        onChange={this.handleDateChange}
                         name="end_time"
                     />
                     </div>
@@ -245,7 +178,7 @@ class ChartDataProvider extends Component {
                     />
                     </div>                
                 </div>                              
-                <button className="btn btn-outline-primary">Submit</button>
+                <button disabled={isDisabled} className="btn btn-outline-primary">Submit</button>
             </form>
             </div>
             
