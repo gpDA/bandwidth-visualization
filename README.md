@@ -8,7 +8,7 @@ RUN `python manage.py runserver`
 
 ### FRONTEND
 cd frontend
-RUN yarn start
+RUN `yarn start`
 
 
 # interview-platform-take-home
