@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import Aux from '../../hoc/Aux/Aux';
 import Spinner from '../Spinner/Spinner';
 import Chart from './Chart';
-import './Chart.css';
 import Select from 'react-select';
 import './Chart.css';
 import DatePicker from "react-datepicker";
-import "./Chart.css";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 import axios from 'axios';
+
 
 function validate(device_uuid){
     return{
@@ -26,15 +25,16 @@ class ChartDataProvider extends Component {
         end_time: moment().format('LLL'),
         window_time: 60,
         num_windows: 10,        
-        num_windows: 10,   
     }    
     
     componentDidMount(){
         axios.get('http://127.0.0.1:8000/api/bandwidth')
         .then(response => {
+            // console.log(response.data);
             this.setState({
                 data: response.data,
                 loaded: true
+
             })
         })
     }
@@ -42,33 +42,17 @@ class ChartDataProvider extends Component {
     handleDevice_uuidChange = device_uuid => {
         this.setState({device_uuid: device_uuid})
     }    
-
-        this.setState({device_uuid})
-    }
-    // check if length of debvice_uuid input is not 0
-    canBeSubmitted(){
-        const errors = validate(this.state.device_uuid);
-        const isDisabled = Object.keys(errors).some(x => errors[x])
-        return !isDisabled;
-    }       
-    }
-    
+    // handleDate Change
     handleDateChange = (date) => {
         this.setState({
             endDate: date
         })
     }  
 
-    // form submit event
     handleSubmit = (event) => {
-    // device_uuid is required; otherwise cannot submit
-    if(!this.canBeSubmitted()){
-        event.preventDefault();
-        return;
-    }
-
+    event.preventDefault();
     const data = new FormData(event.target);
-    // get the value of inputs
+    // const [device_uuid, end_time, window_time, num_windows] = [data.get('device_uuid'), data.get('end_time'), data.get('window_time'), data.get('num_windows')]
     const [end_time, window_time, num_windows] = [data.get('end_time'), data.get('window_time'), data.get('num_windows')]
     
     // PRINT
@@ -86,7 +70,7 @@ class ChartDataProvider extends Component {
                 window_time: window_time
             })
         } 
-// update num_windows with input if num_windows is given
+
         if(num_windows !== ''){
             
             this.setState({
@@ -105,84 +89,29 @@ class ChartDataProvider extends Component {
     }))
 
     const truncElement = new Array(newElement[0].slice(0, this.state.num_windows))
-    // set updated array as filteredData (it will be used in chart.js)
+
     this.setState({
         filteredData : truncElement,
     })        
+    
+    // console.log('filteredData', truncElement, this.state.filteredData)
+
+
     }
 
-    }    
-
-
-    // form submit event
-    handleSubmit = (event) => {
-        
-        // device_uuid is required; otherwise cannot submit
-        if(!this.canBeSubmitted()){
-            event.preventDefault();
-            return;
-        }
-
-        const data = new FormData(event.target);
-        // get the value of inputs
-        const [device_uuid, end_time, window_time, num_windows] = [data.get('device_uuid'), data.get('end_time'), data.get('window_time'), data.get('num_windows')]
-        
-        // PRINT
-        // console.log(device_uuid, end_time, window_time, num_windows);
-
-        // update end_time with input if end_time is given
-        if(end_time !== ''){
-            this.setState({
-                end_time: end_time
-            })
-        }
-        // update window_time with input if window_time is given
-        if(window_time !== ''){
-            this.setState({
-                window_time: window_time
-            })
-        } 
-        // update num_windows with input if num_windows is given
-        if(num_windows !== ''){
-            this.setState({
-                num_windows: num_windows
-            })
-        }                
-
-        // TODO: timeout??
-        // axios.get('http://127.0.0.1:8000/api/bandwidth', {'timeout': 1000 * window_time})
-
-        // axios.get('http://127.0.0.1:8000/api/bandwidth')
-
-
-        // return the filtered array
-        const newElement = new Array(this.state.data.filter(datum => {
-            return (datum.device_id === device_uuid && Math.floor(new Date(datum.timestamp).getTime()/1000) < moment(this.state.end_time).format('X'))
-        }))
-            const truncElement = new Array(newElement[0].slice(0, this.state.num_windows))
-            
-            // set updated array as filteredData (it will be used in chart.js)
-            this.setState({
-                filteredData : truncElement,
-            })
-    }
 
     render(){
         const { data, loaded, filteredData, device_uuid} = this.state;
 
         const errors = validate(device_uuid);
-        const isDisabled = errors['device_uuid'];
-
-        // console.log(errors, isDisabled);
-        // error validation for required device_uuid field
-        const errors = validate(device_uuid);
         const isDisabled = Object.keys(errors).some(x => errors[x]);
 
-        // populate device_uuid otions
         const distict_data = Array.from(new Set(data.map(datum => datum.device_id)))
+
         const options = distict_data.map(datum => {
             return {'label': datum, 'value': datum}
         })
+        
         return(
             <Aux>
             <div className="container">
@@ -192,7 +121,6 @@ class ChartDataProvider extends Component {
                     <div className="col-10 ">
                     {/* required */}
                     <Select
-                        className = {errors.device_uuid ? "error" : ""}
                         options = {options}
                         name="device_uuid"
                         value = {device_uuid}
