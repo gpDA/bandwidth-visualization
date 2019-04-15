@@ -19,9 +19,6 @@ const Chart = ({data}) => {
     // to populate x axes
     const num_data = [...Array(len_data[0]).keys()]
 
-
-    console.log('num_data',num_data);
-
     const chart_data = {
         labels: num_data,
         datasets: [{

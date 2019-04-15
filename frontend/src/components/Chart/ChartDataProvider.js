@@ -49,7 +49,6 @@ class ChartDataProvider extends Component {
         })
     }  
 
-    // submit event
     handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
