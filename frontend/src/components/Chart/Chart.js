@@ -3,7 +3,6 @@ import { Line } from 'react-chartjs-2';
 
 
 const Chart = ({data}) => {
-    console.log('chart.js',data)
     
     const bytes_ts  = Array.from(data.map(datum => datum.map(ele => {return ele.bytes_ts})))
 
@@ -11,12 +10,7 @@ const Chart = ({data}) => {
     
     const bytes_fs  = (data.map(datum => datum.map(ele => {return ele.bytes_fs})))    
 
-    console.log('bytes_ts',bytes_fs)
-
     const num_data = [...Array(len_data[0]).keys()]
-
-
-    console.log('num_data',num_data);
 
     const chart_data = {
         labels: num_data,
