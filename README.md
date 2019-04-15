@@ -1,3 +1,16 @@
+# HOW TO RUN
+
+### BACKEND
+cd take-home-interview
+RUN `source bin/activate`
+cd Backend
+RUN `python manage.py runserver`
+
+### FRONTEND
+cd frontend
+RUN yarn start
+
+
 # interview-platform-take-home
 Take-home test for platform development candidates
 
@@ -22,8 +35,6 @@ The values for bandwidth should be aggregated by `window_time` (default 60 secon
     For example,
     device_uuid = "abc", end_time = 1546300800, window_time = 60, num_windows = 10
 
-    <!-- TODO: last window ending on ... it is less than or certain time -->
-    <!-- TODO: window_time is timeout for request to endpoint? -->
     would return 10 data points (timestamp, value) where each value would be the sum of bytes in that 60 second window, with the last window ending on 1546300800 (Jan 1st 2019 GMT).
 
 The format of the response of this call is up to you so long as it properly powers the component you'll build in part 2.
