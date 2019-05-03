@@ -1,6 +1,6 @@
 # backend
 virtualenv .
-source bin/activate
+
 pip install django djangorestframework
 pip install django-cors-headers
 django-admin startproject backend

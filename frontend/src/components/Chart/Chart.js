@@ -5,13 +5,17 @@ import { Line } from 'react-chartjs-2';
 const Chart = ({data}) => {
 
 
-    // PRINT
+    // data ==> filteredData
+
     // console.log('chart.js ?',data)
     
+    // get bytes_ts
     const bytes_ts  = Array.from(data.map(datum => datum.map(ele => {return ele.bytes_ts})))
 
+    // get the length of data...
     const len_data = data.map(ele => {return ele.length});
-    
+
+    // get bytes_fs
     const bytes_fs  = (data.map(datum => datum.map(ele => {return ele.bytes_fs})))    
 
     // PRINT
@@ -55,6 +59,7 @@ const Chart = ({data}) => {
     }
 
     return (
+        // chartjs {Line} data && options
         <Line data={chart_data} options={options} />
     )
 };

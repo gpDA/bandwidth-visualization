@@ -9,7 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 import axios from 'axios';
 
-
+// validate Function
 function validate(device_uuid){
     return{
         device_uuid: device_uuid.length === 0
@@ -22,26 +22,33 @@ class ChartDataProvider extends Component {
         loaded: false,
         selectedOption: null,
         device_uuid: '',
+        // May 3, 2019 10:11 AM
         end_time: moment().format('LLL'),
+        // default 60
         window_time: 60,
+        // default 10
         num_windows: 10,        
     }    
     
+    // axios GET request
     componentDidMount(){
         axios.get('http://127.0.0.1:8000/api/bandwidth')
         .then(response => {
             // console.log(response.data);
+
+            // set Initial data
             this.setState({
                 data: response.data,
                 loaded: true
-
             })
         })
     }
 
+    // uuid options
     handleDevice_uuidChange = device_uuid => {
         this.setState({device_uuid: device_uuid})
     }    
+     
     // handleDate Change
     handleDateChange = (date) => {
         this.setState({
@@ -49,6 +56,7 @@ class ChartDataProvider extends Component {
         })
     }  
 
+    // Submit event
     handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
@@ -56,7 +64,7 @@ class ChartDataProvider extends Component {
     const [end_time, window_time, num_windows] = [data.get('end_time'), data.get('window_time'), data.get('num_windows')]
     
     // PRINT
-    console.log('before', end_time, window_time, num_windows);
+    // console.log('before', end_time, window_time, num_windows);
 
         // update end_time with input if end_time is given
         if(end_time !== ''){
@@ -77,37 +85,43 @@ class ChartDataProvider extends Component {
         }             
 
 
-    console.log('after',this.state.device_uuid['value'], this.state.end_time, this.state.window_time, this.state.num_windows);
+    // console.log('after',this.state.device_uuid['value'], this.state.end_time, this.state.window_time, this.state.num_windows);
 
 
     // axios.get('http://127.0.0.1:8000/api/bandwidth', {'timeout': 10000})
         
+    // Filter by device_id AND timestamp
     const newElement = new Array(this.state.data.filter(datum => {
         return (datum.device_id === this.state.device_uuid['value'] && Math.floor(new Date(datum.timestamp).getTime()/1000) < moment(this.state.end_time).format('X'))
     }))
 
+    // Filter by number of windows
     const truncElement = new Array(newElement[0].slice(0, this.state.num_windows))
 
     this.setState({
         filteredData : truncElement,
     })        
     
-    console.log('filteredData', truncElement, this.state.filteredData)
+    // filteredData
+
+    // console.log('filteredData', truncElement, this.state.filteredData)
 
 
     }
 
 
     render(){
-        console.log('filteredData *', this.state.filteredData)
+        // console.log('filteredData *', this.state.filteredData)
 
         const { data, loaded, filteredData, device_uuid} = this.state;
 
+        // Error Empty uuid
         const errors = validate(device_uuid);
+        // disabled if error
         const isDisabled = Object.keys(errors).some(x => errors[x]);
 
+        // device_id options
         const distict_data = Array.from(new Set(data.map(datum => datum.device_id)))
-
         const options = distict_data.map(datum => {
             return {'label': datum, 'value': datum}
         })
@@ -115,6 +129,7 @@ class ChartDataProvider extends Component {
         return(
             <Aux>
             <div className="container">
+            {/* Form handleSumibt onSubmit */}
             <form onSubmit={this.handleSubmit}>
                 <div className="form-group row mt-3">
                     <label className="col-2 col-form-label">device_uuid</label>
@@ -168,12 +183,13 @@ class ChartDataProvider extends Component {
                         placeholder="type number of window default (10)"                
                     />
                     </div>                
-                </div>                              
+                </div>             
+                {/* If device_uuid is empty */}
                 <button disabled={isDisabled} className="btn btn-outline-primary">Submit</button>
             </form>
             </div>
             
-
+            {/* If loaded TRUE Chart components OR Spinner components*/}
             {loaded ? 
                 (<Chart data={filteredData} />)
             :
