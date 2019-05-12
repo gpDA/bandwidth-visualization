@@ -1,4 +1,5 @@
-bin/*
+# bin/*
 include/*
 lib/*
 backend/__pycache__/*
+venv/*

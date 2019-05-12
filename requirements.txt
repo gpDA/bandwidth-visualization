@@ -1,14 +1,16 @@
 # backend
-virtualenv .
+python3 -m pip install virtualenv
+virtualenv venv -p python3
 
 pip install django djangorestframework
 pip install django-cors-headers
-django-admin startproject backend
-cd backend
-python manage.py startapp main
-python manage.py migrate
 pip install django-unixtimestampfield
-python manage.py createsuperuser
+# django-admin startproject backend
+# cd backend
+# python manage.py startapp main
+# python manage.py migrate
+
+# python manage.py createsuperuser
 # (gp / geonpyung93)
 python manage.py makemigrations --empty main
 
