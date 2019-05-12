@@ -1,7 +1,14 @@
+
+# VIDEO DEMO
+
+
+[![bandwidth visualization video Demo](https://img.youtube.com/vi/rYw7OTokqr0/0.jpg)](https://www.youtube.com/watch?v=rYw7OTokqr0)
+
+
 # HOW TO RUN
 
 ### BACKEND
-cd take-home-interview
+
 RUN `source bin/activate`
 cd Backend
 RUN `python manage.py runserver`
