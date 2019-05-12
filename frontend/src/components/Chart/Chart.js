@@ -3,10 +3,7 @@ import { Line } from 'react-chartjs-2';
 
 
 const Chart = ({data}) => {
-
-
     // data ==> filteredData
-
     // console.log('chart.js ?',data)
     
     // get bytes_ts
@@ -57,7 +54,6 @@ const Chart = ({data}) => {
             text: 'chart.js line Chart'
         }
     }
-
     return (
         // chartjs {Line} data && options
         <Line data={chart_data} options={options} />
